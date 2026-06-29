@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'none'; base-uri 'none'; form-action 'none';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>메가쇼 상담회 업체 신청 페이지</title>
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <header class="siteHeader">
+    <div class="siteHeader__inner">
+      <img class="brandLogo" src="assets/MEGASHOWLOGO.png" alt="메가쇼" />
+      <div class="headline">
+        <p class="eyebrow">대형유통사 1:1 구매 및 수출상담회</p>
+        <h1>참가기업 상담회 신청서</h1>
+        <p>메가쇼 참가기업 대상 상담회 신청 페이지 입니다.</p>
+      </div>
+      <div class="summaryStats" aria-label="신청 현황">
+        <div><strong id="totalDistributorCount">-</strong><span>등록 유통사</span></div>
+        <div><strong id="matchedDistributorCount">-</strong><span>상담 가능</span></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="pageShell">
+    <form id="applicationForm" class="applicationForm">
+      <section class="formBand">
+        <div class="sectionTitle">
+          <p class="eyebrow">기본 정보</p>
+          <h2>참가기업 정보</h2>
+        </div>
+        <div class="formGrid">
+          <label>회사명 <span>*</span>
+            <input class="control" name="companyName" required autocomplete="organization" />
+          </label>
+          <label>사업형태 <span>*</span>
+            <span class="helpText">중복선택 가능합니다.</span>
+            <div class="checkGrid">
+              <label><input type="checkbox" name="businessType" value="제조" /> 제조</label>
+              <label><input type="checkbox" name="businessType" value="도매유통" /> 도매유통</label>
+              <label><input type="checkbox" name="businessType" value="소매유통" /> 소매유통</label>
+              <label><input type="checkbox" name="businessType" value="수입" /> 수입</label>
+              <label><input type="checkbox" name="businessType" value="기타" /> 기타</label>
+            </div>
+          </label>
+          <label>회사설립일 <span>*</span>
+            <input class="control" name="foundedDate" required type="date" />
+          </label>
+          <label>직원 수 <span>*</span>
+            <input class="control" name="employeeCount" required inputmode="numeric" />
+          </label>
+          <label>담당자명 <span>*</span>
+            <input class="control" name="managerName" required autocomplete="name" />
+          </label>
+          <label>직함 <span>*</span>
+            <input class="control" name="managerTitle" required autocomplete="organization-title" />
+          </label>
+          <label>사무실 번호 <span>*</span>
+            <span class="helpText">ex) 02-****-****</span>
+            <input class="control" name="officePhone" required inputmode="tel" placeholder="000-000-0000" />
+          </label>
+          <label>휴대폰 번호 <span>*</span>
+            <span class="helpText">ex) 010-****-****</span>
+            <input class="control" name="mobilePhone" required inputmode="tel" placeholder="000-0000-0000" />
+          </label>
+          <label>이메일 주소 <span>*</span>
+            <input class="control" name="email" required type="email" autocomplete="email" />
+          </label>
+          <label>홈페이지 주소 <span>*</span>
+            <input class="control" name="homepage" required placeholder="없음 또는 URL" />
+          </label>
+        </div>
+      </section>
+
+      <section class="formBand">
+        <div class="sectionTitle">
+          <p class="eyebrow">상품 정보</p>
+          <h2>상담 품목 카테고리</h2>
+        </div>
+        <div class="categoryCards" id="categoryCards" aria-label="상담 품목 대분류"></div>
+        <div class="formGrid">
+          <label>상담 품목 카테고리(소분류) <span>*</span>
+            <select id="subcategorySelect" class="control" name="subcategory" required disabled>
+              <option value="">대분류를 먼저 선택하세요</option>
+            </select>
+          </label>
+          <label class="foodOnly hidden">보관 방식 <span>*</span>
+            <select id="storageSelect" class="control" name="storage">
+              <option value="">선택</option>
+              <option>실온 보관</option>
+              <option>냉장 보관</option>
+              <option>냉동 보관</option>
+            </select>
+          </label>
+          <label class="foodOnly hidden">유통기한 <span>*</span>
+            <select id="shelfLifeSelect" class="control" name="shelfLife">
+              <option value="">선택</option>
+              <option>3개월 이내</option>
+              <option>3개월 ~ 6개월</option>
+              <option>6개월 이상</option>
+            </select>
+          </label>
+          <label class="full foodOnly hidden">제품 특이사항
+            <span class="helpText">중복선택 가능합니다.</span>
+            <div class="checkGrid wide">
+              <label><input type="checkbox" name="foodIssue" value="신선식품" /> 신선식품</label>
+              <label><input type="checkbox" name="foodIssue" value="육류 함유 제품" /> 육류 함유 제품</label>
+              <label><input type="checkbox" name="foodIssue" value="식용색소 첨가 제품" /> 식용색소 첨가 제품</label>
+              <label><input type="checkbox" name="foodIssue" value="면세/규제 대상 제품" /> 면세/규제 대상 제품</label>
+              <label><input type="checkbox" name="foodIssue" value="해당없음" /> 해당없음</label>
+            </div>
+          </label>
+          <label class="full">세부 상담 품목 <span>*</span>
+            <input class="control" name="productDetail" required placeholder="상담을 희망하는 주력 제품을 적어주세요." />
+          </label>
+        </div>
+      </section>
+
+      <section class="formBand">
+        <div class="sectionTitle">
+          <p class="eyebrow">유통 정보</p>
+          <h2>관심 분야와 유통 현황</h2>
+        </div>
+        <div class="formGrid">
+          <label class="full">관심 분야 <span>*</span>
+            <span class="helpText">중복선택 가능합니다.</span>
+            <div class="checkGrid compact">
+              <label><input type="checkbox" name="interestType" value="내수" /> 내수</label>
+              <label><input type="checkbox" name="interestType" value="수출" /> 수출</label>
+            </div>
+          </label>
+          <label class="full">관심 유통채널
+            <span class="helpText">중복선택 가능합니다.</span>
+            <div id="interestChannels" class="checkGrid wide"></div>
+          </label>
+          <label class="full">현재 유통 현황
+            <span class="helpText">중복선택 가능합니다.</span>
+            <div id="currentChannels" class="checkGrid wide"></div>
+          </label>
+          <label class="full">유통 현황 상세 <span>*</span>
+            <textarea class="control" name="distributionDetail" rows="4" required placeholder="현재 유통처가 없을 경우 '없음' 작성"></textarea>
+          </label>
+          <label class="full">기타 유통 관련 특이사항
+            <span class="helpText">중복선택 가능합니다.</span>
+            <div class="checkGrid wide">
+              <label><input type="checkbox" name="distributionIssue" value="해외 직수입 제품" /> 해외 직수입 제품</label>
+              <label><input type="checkbox" name="distributionIssue" value="수출/해외배송 불가 제품" /> 수출/해외배송 불가 제품</label>
+              <label><input type="checkbox" name="distributionIssue" value="타 폐쇄몰 입점 제품" /> 타 폐쇄몰 입점 제품</label>
+              <label><input type="checkbox" name="distributionIssue" value="벤더사" /> 벤더사</label>
+              <label><input type="checkbox" name="distributionIssue" value="해당없음" /> 해당없음</label>
+            </div>
+          </label>
+          <label class="full">임의 매칭 희망 여부 <span>*</span>
+            <div class="radioGrid">
+              <label><input type="radio" name="randomMatch" value="예, 희망합니다." required /> 예, 희망합니다.</label>
+              <label><input type="radio" name="randomMatch" value="아니요, 희망하지않습니다." /> 아니요, 희망하지않습니다.</label>
+            </div>
+          </label>
+        </div>
+      </section>
+
+      <section class="formBand">
+        <div class="sectionTitle withMeta">
+          <div>
+            <p class="eyebrow">상담 희망 유통사</p>
+            <h2>상담 가능 유통사 순위 선택</h2>
+          </div>
+          <div class="matchCount"><strong id="matchCountText">0곳</strong><span>선택 조건 기준</span></div>
+        </div>
+        <div id="matchNotice" class="notice">대분류와 소분류를 선택하면 상담 가능한 유통사가 표시됩니다.</div>
+        <div id="rankingGrid" class="rankingGrid"></div>
+        <div id="matchedList" class="matchedList"></div>
+      </section>
+
+      <section class="formBand">
+        <div class="sectionTitle">
+          <p class="eyebrow">접수 확인</p>
+          <h2>제출 전 확인</h2>
+        </div>
+        <label class="agreeRow">
+          <input type="checkbox" name="privacyAgree" required />
+          <span>
+            개인정보 수집·이용에 동의합니다. 수집 항목은 회사명, 담당자명, 직함, 연락처, 이메일, 상담 희망 정보이며,
+            상담회 신청 접수, 신청 확인, 상담 매칭 및 운영 안내 목적으로 사용됩니다.
+            상담회 종료 후 내부 운영 기준에 따라 보관 후 파기되며, 동의하지 않을 경우 신청 접수가 제한될 수 있습니다.
+          </span>
+        </label>
+        <label class="agreeRow">
+          <input type="checkbox" name="confirmationAgree" required />
+          <span>상담회 신청 접수 후 3일 이내 신청확인 문자를 보내드린다는 안내를 확인했습니다.</span>
+        </label>
+        <div id="previewContent" class="previewContent"></div>
+        <div id="statusMessage" class="statusMessage" role="status"></div>
+        <div class="actionBar">
+          <button type="button" id="saveDraftBtn" class="button secondary">임시저장</button>
+          <button type="button" id="loadDraftBtn" class="button secondary">불러오기</button>
+          <button type="submit" id="submitBtn" class="button primary">신청서 제출</button>
+        </div>
+      </section>
+    </form>
+  </main>
+
+  <script src="data/distributors.js"></script>
+  <script src="data/brochures.js"></script>
+  <script src="assets/config.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
