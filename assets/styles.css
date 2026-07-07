@@ -430,9 +430,13 @@ textarea.control {
   font-weight: 800;
 }
 
-.agreeRow input {
+.agreeRow input[type="checkbox"] {
+  flex: 0 0 18px;
+  inline-size: 18px;
+  block-size: 18px;
   width: 18px;
   height: 18px;
+  min-width: 18px;
   margin-top: 2px;
   accent-color: var(--brand);
 }
