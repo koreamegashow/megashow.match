@@ -30,7 +30,6 @@ function doPost(e) {
     try {
       const sheet = getSheet_();
       ensureHeaders_(sheet);
-      assertNotDuplicate_(sheet, payload.submissionId);
       sheet.appendRow(toSafeRow_(payload));
     } finally {
       lock.releaseLock();
@@ -80,13 +79,6 @@ function validatePayload_(p) {
       throw new Error(`${key} 값이 너무 깁니다.`);
     }
   });
-}
-
-function assertNotDuplicate_(sheet, submissionId) {
-  const finder = sheet.createTextFinder(String(submissionId)).matchEntireCell(true);
-  if (finder.findNext()) {
-    throw new Error("이미 접수된 제출입니다.");
-  }
 }
 
 function getSheet_() {
@@ -164,4 +156,3 @@ function json_(obj) {
     .createTextOutput(JSON.stringify(obj))
     .setMimeType(ContentService.MimeType.JSON);
 }
-
