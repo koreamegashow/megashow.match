@@ -87,9 +87,13 @@
               <label><input type="checkbox" name="businessType" value="기타" /> 기타</label>
             </div>
           </div>
-          <label>회사설립일 <span class="requiredMark" aria-hidden="true">*</span>
-            <input class="control" name="foundedDate" required type="date" />
-          </label>
+          <div class="formField">
+            <div id="founded-date-label" class="fieldLabel">회사설립일 <span class="requiredMark" aria-hidden="true">*</span></div>
+            <div class="dateControl">
+              <input id="foundedDateInput" class="control" name="foundedDate" required inputmode="numeric" maxlength="10" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" placeholder="YYYY-MM-DD" aria-labelledby="founded-date-label" />
+              <input id="foundedDatePicker" class="datePicker" type="date" min="1000-01-01" max="9999-12-31" aria-label="달력에서 회사설립일 선택" />
+            </div>
+          </div>
           <label>직원 수 <span class="requiredMark" aria-hidden="true">*</span>
             <input class="control" name="employeeCount" required inputmode="numeric" pattern="[0-9]+" placeholder="예: 15" />
           </label>
