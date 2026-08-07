@@ -5,38 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; frame-ancestors 'none'; base-uri 'none'; form-action 'none';">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>메가쇼 상담회 업체 신청 페이지</title>
+  <meta name="theme-color" content="#ffffff">
+  <title>메가쇼 참가기업 상담회 신청</title>
   <link rel="stylesheet" href="assets/styles.css" />
 </head>
 <body>
+  <a class="skipLink" href="#applicationForm">신청서로 바로가기</a>
+
   <header class="siteHeader">
-    <div class="siteHeader__inner">
-      <img class="brandLogo" src="assets/MEGASHOWLOGO.png" alt="메가쇼" />
-      <div class="headline">
+    <div class="topBar">
+      <a class="brandLink" href="#top" aria-label="메가쇼 상담회 신청 페이지 처음으로">
+        <img class="brandLogo" src="assets/MEGASHOWLOGO.png" alt="메가쇼" width="190" height="61" />
+      </a>
+    </div>
+
+    <div id="top" class="hero">
+      <div class="heroCopy">
         <p class="eyebrow">대형유통사 1:1 구매 및 수출상담회</p>
         <h1>참가기업 상담회 신청서</h1>
-        <p>메가쇼 참가기업 대상 상담회 신청 페이지 입니다.</p>
+        <p class="heroDescription">메가쇼 참가기업을 위한 대형유통사 1:1 구매·수출 상담회 신청 페이지 입니다.</p>
+        <div class="heroMeta" aria-label="신청 안내">
+          <span>예상 소요시간 약 8분</span>
+          <span><b aria-hidden="true">*</b> 표시는 필수 입력</span>
+        </div>
       </div>
+
       <div class="summaryStats" aria-label="신청 현황">
-        <div><strong id="totalDistributorCount">-</strong><span>등록 유통사</span></div>
-        <div><strong id="matchedDistributorCount">-</strong><span>상담 가능</span></div>
+        <div>
+          <strong id="totalDistributorCount">-</strong>
+          <span>등록 유통사</span>
+        </div>
+        <div>
+          <strong id="matchedDistributorCount">-</strong>
+          <span>현재 상담 가능</span>
+        </div>
       </div>
     </div>
   </header>
 
   <main class="pageShell">
+    <aside class="progressRail" aria-label="신청서 구성">
+      <p class="railLabel">Steps to Apply</p>
+      <h2>신청 단계</h2>
+      <nav aria-label="신청서 섹션 바로가기">
+        <ol>
+          <li><a href="#company-section"><span>01</span>기업 정보</a></li>
+          <li><a href="#product-section"><span>02</span>상품 정보</a></li>
+          <li><a href="#distribution-section"><span>03</span>유통 현황</a></li>
+          <li><a href="#matching-section"><span>04</span>유통사 선택</a></li>
+          <li><a href="#confirm-section"><span>05</span>접수 확인</a></li>
+        </ol>
+      </nav>
+      <div class="railHelp">
+        <strong>작성시 참고사항</strong>
+        <p>주력 제품 한 개를 기준으로 작성하면 더 효과적인 매칭이 진행될 수 있습니다.</p>
+      </div>
+    </aside>
+
     <form id="applicationForm" class="applicationForm">
-      <section class="formBand">
+      <section id="company-section" class="formBand" aria-labelledby="company-title">
         <div class="sectionTitle">
-          <p class="eyebrow">기본 정보</p>
-          <h2>참가기업 정보</h2>
+          <span class="stepBadge" aria-hidden="true">01</span>
+          <div>
+            <p class="eyebrow">기본 정보</p>
+            <h2 id="company-title">참가기업 정보</h2>
+            <p class="sectionHelp">상담회 운영과 신청 확인에 필요한 기업 정보를 입력해주세요.</p>
+          </div>
         </div>
         <div class="formGrid">
-          <label>회사명 <span>*</span>
+          <label>회사명 <span class="requiredMark" aria-hidden="true">*</span>
             <input class="control" name="companyName" required autocomplete="organization" />
           </label>
-          <label>사업형태 <span>*</span>
-            <span class="helpText">중복선택 가능합니다.</span>
+          <div class="formField" role="group" aria-labelledby="business-type-label" aria-required="true">
+            <div id="business-type-label" class="fieldLabel">사업형태 <span class="requiredMark" aria-hidden="true">*</span></div>
+            <span class="helpText">해당 항목을 모두 선택해주세요.</span>
             <div class="checkGrid">
               <label><input type="checkbox" name="businessType" value="제조" /> 제조</label>
               <label><input type="checkbox" name="businessType" value="도매유통" /> 도매유통</label>
@@ -44,49 +86,53 @@
               <label><input type="checkbox" name="businessType" value="수입" /> 수입</label>
               <label><input type="checkbox" name="businessType" value="기타" /> 기타</label>
             </div>
-          </label>
-          <label>회사설립일 <span>*</span>
+          </div>
+          <label>회사설립일 <span class="requiredMark" aria-hidden="true">*</span>
             <input class="control" name="foundedDate" required type="date" />
           </label>
-          <label>직원 수 <span>*</span>
-            <input class="control" name="employeeCount" required inputmode="numeric" />
+          <label>직원 수 <span class="requiredMark" aria-hidden="true">*</span>
+            <input class="control" name="employeeCount" required inputmode="numeric" placeholder="예: 15명" />
           </label>
-          <label>담당자명 <span>*</span>
+          <label>담당자명 <span class="requiredMark" aria-hidden="true">*</span>
             <input class="control" name="managerName" required autocomplete="name" />
           </label>
-          <label>직함 <span>*</span>
+          <label>직함 <span class="requiredMark" aria-hidden="true">*</span>
             <input class="control" name="managerTitle" required autocomplete="organization-title" />
           </label>
-          <label>사무실 번호 <span>*</span>
-            <span class="helpText">ex) 02-****-****</span>
-            <input class="control" name="officePhone" required inputmode="tel" placeholder="000-000-0000" />
+          <label>사무실 번호 <span class="requiredMark" aria-hidden="true">*</span>
+            <span class="helpText">지역번호를 포함해 입력해주세요.</span>
+            <input class="control" name="officePhone" required inputmode="tel" autocomplete="tel" placeholder="02-0000-0000" />
           </label>
-          <label>휴대폰 번호 <span>*</span>
-            <span class="helpText">ex) 010-****-****</span>
-            <input class="control" name="mobilePhone" required inputmode="tel" placeholder="000-0000-0000" />
+          <label>휴대폰 번호 <span class="requiredMark" aria-hidden="true">*</span>
+            <span class="helpText">신청 확인 문자를 받을 번호입니다.</span>
+            <input class="control" name="mobilePhone" required inputmode="tel" autocomplete="tel" placeholder="010-0000-0000" />
           </label>
-          <label>이메일 주소 <span>*</span>
-            <input class="control" name="email" required type="email" autocomplete="email" />
+          <label>이메일 주소 <span class="requiredMark" aria-hidden="true">*</span>
+            <input class="control" name="email" required type="email" autocomplete="email" placeholder="name@company.com" />
           </label>
-          <label>홈페이지 주소 <span>*</span>
-            <input class="control" name="homepage" required placeholder="없음 또는 URL" />
+          <label>홈페이지 주소 <span class="requiredMark" aria-hidden="true">*</span>
+            <input class="control" name="homepage" required inputmode="url" autocomplete="url" placeholder="없음 또는 https://" />
           </label>
         </div>
       </section>
 
-      <section class="formBand">
+      <section id="product-section" class="formBand" aria-labelledby="product-title">
         <div class="sectionTitle">
-          <p class="eyebrow">상품 정보</p>
-          <h2>상담 품목 카테고리</h2>
+          <span class="stepBadge" aria-hidden="true">02</span>
+          <div>
+            <p class="eyebrow">상품 정보</p>
+            <h2 id="product-title">상담 품목 카테고리</h2>
+            <p class="sectionHelp">상담을 희망하는 주력 제품 한 개의 카테고리를 선택해주세요.</p>
+          </div>
         </div>
-        <div class="categoryCards" id="categoryCards" aria-label="상담 품목 대분류"></div>
+        <div class="categoryCards" id="categoryCards" role="radiogroup" aria-label="상담 품목 대분류" aria-required="true"></div>
         <div class="formGrid">
-          <label>상담 품목 카테고리(소분류) <span>*</span>
+          <label>상담 품목 카테고리(소분류) <span class="requiredMark" aria-hidden="true">*</span>
             <select id="subcategorySelect" class="control" name="subcategory" required disabled>
               <option value="">대분류를 먼저 선택하세요</option>
             </select>
           </label>
-          <label class="foodOnly hidden">보관 방식 <span>*</span>
+          <label class="foodOnly hidden">보관 방식 <span class="requiredMark" aria-hidden="true">*</span>
             <select id="storageSelect" class="control" name="storage">
               <option value="">선택</option>
               <option>실온 보관</option>
@@ -94,7 +140,7 @@
               <option>냉동 보관</option>
             </select>
           </label>
-          <label class="foodOnly hidden">유통기한 <span>*</span>
+          <label class="foodOnly hidden">유통기한 <span class="requiredMark" aria-hidden="true">*</span>
             <select id="shelfLifeSelect" class="control" name="shelfLife">
               <option value="">선택</option>
               <option>3개월 이내</option>
@@ -102,8 +148,9 @@
               <option>6개월 이상</option>
             </select>
           </label>
-          <label class="full foodOnly hidden">제품 특이사항
-            <span class="helpText">중복선택 가능합니다.</span>
+          <div class="formField full foodOnly hidden" role="group" aria-labelledby="food-issue-label">
+            <div id="food-issue-label" class="fieldLabel">제품 특이사항</div>
+            <span class="helpText">해당 항목을 모두 선택해주세요.</span>
             <div class="checkGrid wide">
               <label><input type="checkbox" name="foodIssue" value="신선식품" /> 신선식품</label>
               <label><input type="checkbox" name="foodIssue" value="육류 함유 제품" /> 육류 함유 제품</label>
@@ -111,39 +158,48 @@
               <label><input type="checkbox" name="foodIssue" value="면세/규제 대상 제품" /> 면세/규제 대상 제품</label>
               <label><input type="checkbox" name="foodIssue" value="해당없음" /> 해당없음</label>
             </div>
-          </label>
-          <label class="full">세부 상담 품목 <span>*</span>
-            <input class="control" name="productDetail" required placeholder="상담을 희망하는 주력 제품을 적어주세요." />
+          </div>
+          <label class="full">세부 상담 품목 <span class="requiredMark" aria-hidden="true">*</span>
+            <span class="helpText" id="productDetailHelp">주력 제품명을 25자 이내로 입력해주세요.</span>
+            <input class="control" name="productDetail" required maxlength="25" aria-describedby="productDetailHelp" placeholder="예: 저당 단백질 그래놀라" />
           </label>
         </div>
       </section>
 
-      <section class="formBand">
+      <section id="distribution-section" class="formBand" aria-labelledby="distribution-title">
         <div class="sectionTitle">
-          <p class="eyebrow">유통 정보</p>
-          <h2>관심 분야와 유통 현황</h2>
+          <span class="stepBadge" aria-hidden="true">03</span>
+          <div>
+            <p class="eyebrow">유통 정보</p>
+            <h2 id="distribution-title">관심 분야 및 유통 현황</h2>
+            <p class="sectionHelp">현재 판매 채널과 향후 희망하는 유통 방향을 알려주세요.</p>
+          </div>
         </div>
         <div class="formGrid">
-          <label class="full">관심 분야 <span>*</span>
-            <span class="helpText">중복선택 가능합니다.</span>
+          <div class="formField full" role="group" aria-labelledby="interest-type-label" aria-required="true">
+            <div id="interest-type-label" class="fieldLabel">관심 분야 <span class="requiredMark" aria-hidden="true">*</span></div>
+            <span class="helpText">중복 선택 가능합니다.</span>
             <div class="checkGrid compact">
               <label><input type="checkbox" name="interestType" value="내수" /> 내수</label>
               <label><input type="checkbox" name="interestType" value="수출" /> 수출</label>
             </div>
-          </label>
-          <label class="full">관심 유통채널
-            <span class="helpText">중복선택 가능합니다.</span>
+          </div>
+          <div class="formField full" role="group" aria-labelledby="interest-channel-label">
+            <div id="interest-channel-label" class="fieldLabel">관심 유통채널</div>
+            <span class="helpText">진출을 희망하는 채널을 모두 선택해주세요.</span>
             <div id="interestChannels" class="checkGrid wide"></div>
-          </label>
-          <label class="full">현재 유통 현황
-            <span class="helpText">중복선택 가능합니다.</span>
+          </div>
+          <div class="formField full" role="group" aria-labelledby="current-channel-label">
+            <div id="current-channel-label" class="fieldLabel">현재 유통 현황</div>
+            <span class="helpText">현재 입점 또는 판매 중인 채널을 모두 선택해주세요.</span>
             <div id="currentChannels" class="checkGrid wide"></div>
+          </div>
+          <label class="full">유통 현황 상세 <span class="requiredMark" aria-hidden="true">*</span>
+            <textarea class="control" name="distributionDetail" rows="4" required placeholder="주요 유통처와 판매 현황을 입력해주세요. 현재 유통처가 없다면 ‘없음’으로 작성해주세요."></textarea>
           </label>
-          <label class="full">유통 현황 상세 <span>*</span>
-            <textarea class="control" name="distributionDetail" rows="4" required placeholder="현재 유통처가 없을 경우 '없음' 작성"></textarea>
-          </label>
-          <label class="full">기타 유통 관련 특이사항
-            <span class="helpText">중복선택 가능합니다.</span>
+          <div class="formField full" role="group" aria-labelledby="distribution-issue-label">
+            <div id="distribution-issue-label" class="fieldLabel">기타 유통 관련 특이사항</div>
+            <span class="helpText">해당 항목을 모두 선택해주세요.</span>
             <div class="checkGrid wide">
               <label><input type="checkbox" name="distributionIssue" value="해외 직수입 제품" /> 해외 직수입 제품</label>
               <label><input type="checkbox" name="distributionIssue" value="수출/해외배송 불가 제품" /> 수출/해외배송 불가 제품</label>
@@ -151,56 +207,94 @@
               <label><input type="checkbox" name="distributionIssue" value="벤더사" /> 벤더사</label>
               <label><input type="checkbox" name="distributionIssue" value="해당없음" /> 해당없음</label>
             </div>
-          </label>
-          <label class="full">임의 매칭 희망 여부 <span>*</span>
+          </div>
+          <div class="formField full" role="radiogroup" aria-labelledby="random-match-label" aria-required="true">
+            <div id="random-match-label" class="fieldLabel">임의 매칭 희망 여부 <span class="requiredMark" aria-hidden="true">*</span></div>
+            <span class="helpText">MD 요청과 품목 적합도에 따라 추가 매칭될 수 있습니다.</span>
             <div class="radioGrid">
               <label><input type="radio" name="randomMatch" value="예, 희망합니다." required /> 예, 희망합니다.</label>
-              <label><input type="radio" name="randomMatch" value="아니요, 희망하지않습니다." /> 아니요, 희망하지않습니다.</label>
+              <label><input type="radio" name="randomMatch" value="아니요, 희망하지않습니다." /> 아니요, 희망하지 않습니다.</label>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="matching-section" class="formBand" aria-labelledby="matching-title">
+        <div class="sectionTitle withMeta">
+          <span class="stepBadge" aria-hidden="true">04</span>
+          <div class="sectionTitle__copy">
+            <p class="eyebrow">상담 희망 유통사</p>
+            <h2 id="matching-title">상담 가능 유통사 순위 선택</h2>
+            <p class="sectionHelp">상품 조건에 맞는 유통사를 확인하고 희망 순위를 선택해주세요.</p>
+          </div>
+          <div class="matchCount">
+            <strong id="matchCountText">0곳</strong>
+            <span>선택 조건 기준</span>
+          </div>
+        </div>
+        <div id="matchNotice" class="notice" role="status">대분류와 소분류를 선택하면 상담 가능한 유통사가 표시됩니다.</div>
+        <div id="rankingGrid" class="rankingGrid" aria-label="상담 희망 순위"></div>
+        <div id="matchedList" class="matchedList" aria-label="상담 가능한 유통사 목록"></div>
+      </section>
+
+      <section id="confirm-section" class="formBand" aria-labelledby="confirm-title">
+        <div class="sectionTitle">
+          <span class="stepBadge" aria-hidden="true">05</span>
+          <div>
+            <p class="eyebrow">접수 확인</p>
+            <h2 id="confirm-title">제출 전 확인</h2>
+            <p class="sectionHelp">입력한 내용을 확인하고 필수 동의 항목을 선택해주세요.</p>
+          </div>
+        </div>
+        <div class="agreementGroup">
+          <label class="agreeRow">
+            <input type="checkbox" name="privacyAgree" required />
+            <span class="agreeText">
+              <strong><span class="requiredMark" aria-hidden="true">*</span> 개인정보 수집·이용 동의</strong>
+              <span>회사명, 담당자 정보, 연락처, 이메일, 상담 희망 정보를 신청 접수·확인·매칭·운영 안내 목적으로 수집합니다. 상담회 종료 후 내부 운영 기준에 따라 보관 후 파기하며, 미동의 시 신청이 제한됩니다.</span>
+            </span>
+          </label>
+          <label class="agreeRow">
+            <input type="checkbox" name="confirmationAgree" required />
+            <span class="agreeText">
+              <strong><span class="requiredMark" aria-hidden="true">*</span> 접수 안내 확인</strong>
+              <span>신청 접수 후 3일 이내 신청 확인 문자를 보내드리고 있습니다. 문자를 받지 못한 경우 사무국 회신 부탁드립니다.</span>
+            </span>
           </label>
         </div>
-      </section>
-
-      <section class="formBand">
-        <div class="sectionTitle withMeta">
-          <div>
-            <p class="eyebrow">상담 희망 유통사</p>
-            <h2>상담 가능 유통사 순위 선택</h2>
-          </div>
-          <div class="matchCount"><strong id="matchCountText">0곳</strong><span>선택 조건 기준</span></div>
+        <div class="previewHeader">
+          <h3>입력 내용 요약</h3>
+          <span>입력과 동시에 업데이트됩니다.</span>
         </div>
-        <div id="matchNotice" class="notice">대분류와 소분류를 선택하면 상담 가능한 유통사가 표시됩니다.</div>
-        <div id="rankingGrid" class="rankingGrid"></div>
-        <div id="matchedList" class="matchedList"></div>
-      </section>
-
-      <section class="formBand">
-        <div class="sectionTitle">
-          <p class="eyebrow">접수 확인</p>
-          <h2>제출 전 확인</h2>
-        </div>
-        <label class="agreeRow">
-          <input type="checkbox" name="privacyAgree" required />
-          <span>
-            개인정보 수집·이용에 동의합니다. 수집 항목은 회사명, 담당자명, 직함, 연락처, 이메일, 상담 희망 정보이며,
-            상담회 신청 접수, 신청 확인, 상담 매칭 및 운영 안내 목적으로 사용됩니다.
-            상담회 종료 후 내부 운영 기준에 따라 보관 후 파기되며, 동의하지 않을 경우 신청 접수가 제한될 수 있습니다.
-          </span>
-        </label>
-        <label class="agreeRow">
-          <input type="checkbox" name="confirmationAgree" required />
-          <span>상담회 신청 접수 후 3일 이내 신청확인 문자를 보내드린다는 안내를 확인했습니다.</span>
-        </label>
         <div id="previewContent" class="previewContent"></div>
-        <div id="statusMessage" class="statusMessage" role="status"></div>
+        <div id="statusMessage" class="statusMessage" role="status" aria-live="polite"></div>
         <div class="actionBar">
-          <button type="button" id="saveDraftBtn" class="button secondary">임시저장</button>
-          <button type="button" id="loadDraftBtn" class="button secondary">불러오기</button>
           <button type="submit" id="submitBtn" class="button primary">신청서 제출</button>
         </div>
       </section>
     </form>
   </main>
+
+  <footer class="siteFooter">
+    <img src="assets/MEGASHOWLOGO.png" alt="" width="120" height="39" />
+    <p>대형유통사 1:1 구매 및 수출 상담회</p>
+  </footer>
+
+  <dialog id="successModal" class="successModal" aria-labelledby="successModalTitle" aria-describedby="successModalDescription">
+    <div class="successModal__header">
+      <div>
+        <p class="eyebrow">접수 완료</p>
+        <h2 id="successModalTitle">신청 완료되었습니다.</h2>
+        <p id="successModalDescription">원활한 상담을 위해 아래 준비물을 미리 확인해주세요.</p>
+      </div>
+      <button type="button" id="closeSuccessModalBtn" class="iconButton" aria-label="팝업 닫기">&times;</button>
+    </div>
+    <img class="prepChecklistImage" src="assets/consultation-prep-checklist.png" alt="상담회 준비리스트: 명함, 안내자료, 상담제품" width="1200" height="800" />
+    <div class="successModal__actions">
+      <a class="button secondary" href="assets/consultation-prep-checklist.png" download="메가쇼_상담회_준비리스트.png">준비리스트 다운로드</a>
+      <button type="button" id="confirmSuccessModalBtn" class="button primary">확인</button>
+    </div>
+  </dialog>
 
   <script src="data/distributors.js"></script>
   <script src="data/brochures.js"></script>
