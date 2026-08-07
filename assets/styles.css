@@ -481,6 +481,10 @@ a {
   line-height: 1.5;
 }
 
+.helpTextSpacer {
+  visibility: hidden;
+}
+
 .control {
   width: 100%;
   min-height: 52px;
@@ -1171,6 +1175,10 @@ textarea.control {
 }
 
 @media (max-width: 768px) {
+  .helpTextSpacer {
+    display: none;
+  }
+
   .floatingSummaryStats {
     top: max(8px, env(safe-area-inset-top));
     right: max(12px, env(safe-area-inset-right));
