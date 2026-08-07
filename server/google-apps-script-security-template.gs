@@ -6,6 +6,7 @@ const ALLOWED_ORIGINS = [
 const ACCEPT_START = new Date("2026-01-01T00:00:00+09:00");
 const ACCEPT_END = new Date("2026-12-31T23:59:59+09:00");
 const MAX_FIELD_LENGTH = 2000;
+const PRODUCT_DETAIL_MAX_LENGTH = 30;
 
 const HEADERS = [
   "제출일시", "submissionId", "pageVersion", "회사명", "사업형태", "회사설립일", "직원 수",
@@ -58,7 +59,7 @@ function assertAccepting_() {
 }
 
 function validatePayload_(p) {
-  const required = ["submissionId", "companyName", "managerName", "mobilePhone", "email", "category", "subcategory"];
+  const required = ["submissionId", "companyName", "managerName", "mobilePhone", "email", "category", "subcategory", "productDetail"];
   required.forEach((key) => {
     if (!String(p[key] || "").trim()) throw new Error(`${key} 값이 필요합니다.`);
   });
@@ -72,6 +73,16 @@ function validatePayload_(p) {
   if (!p.privacyAgree) {
     throw new Error("개인정보 수집·이용 동의가 필요합니다.");
   }
+  if (String(p.productDetail || "").trim().length > PRODUCT_DETAIL_MAX_LENGTH) {
+    throw new Error(`세부 상담 품목은 ${PRODUCT_DETAIL_MAX_LENGTH}자 이내로 입력해 주세요.`);
+  }
+
+  ["foodIssues", "distributionIssues"].forEach((key) => {
+    const values = Array.isArray(p[key]) ? p[key] : [];
+    if (values.includes("해당없음") && values.length > 1) {
+      throw new Error(`${key}에서 해당없음과 다른 항목을 함께 선택할 수 없습니다.`);
+    }
+  });
 
   Object.keys(p).forEach((key) => {
     const value = p[key];
