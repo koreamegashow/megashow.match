@@ -20,10 +20,10 @@ const ISSUE_ALIAS_MAP = {
   "식용색소 첨가 제품": ["식용색소 첨가 제품", "식용색소첨가제품"],
   "면세/규제 대상 제품": ["면세/규제 대상 제품", "면세 규제 대상 제품"],
 };
-const PAGE_VERSION = "2026-06-29-security-1";
-const DRAFT_KEY = "megashowConsultationApplicationDraftV3";
-const LEGACY_DRAFT_KEYS = ["megashowConsultationApplicationDraftV2"];
+const PAGE_VERSION = "2026-08-06-design-operational-1";
 const MAX_FIELD_LENGTH = 1000;
+const PRODUCT_DETAIL_MAX_LENGTH = 25;
+const NONE_EXCLUSIVE_GROUPS = ["foodIssue", "distributionIssue"];
 const data = Array.isArray(window.DISTRIBUTORS) ? window.DISTRIBUTORS : [];
 const brochureLinks = window.BROCHURE_LINKS || {};
 const BROCHURE_COMPANY_ALIASES = {
@@ -130,15 +130,33 @@ function singleValue(name) {
   return new FormData($("#applicationForm")).get(name) || "";
 }
 
+function syncExclusiveNoneGroup(name) {
+  const inputs = $$(`[name="${name}"]`);
+  const noneInput = inputs.find((input) => input.value === "해당없음");
+  if (!noneInput) return;
+
+  const noneSelected = noneInput.checked;
+  inputs.forEach((input) => {
+    if (input === noneInput) return;
+    if (noneSelected) input.checked = false;
+    input.disabled = noneSelected;
+    input.closest("label")?.classList.toggle("is-disabled", noneSelected);
+  });
+}
+
+function handleExclusiveNoneChange(input) {
+  if (!NONE_EXCLUSIVE_GROUPS.includes(input.name)) return;
+
+  if (input.value !== "해당없음" && input.checked) {
+    const noneInput = $$(`[name="${input.name}"]`).find((item) => item.value === "해당없음");
+    if (noneInput) noneInput.checked = false;
+  }
+  syncExclusiveNoneGroup(input.name);
+}
+
 function getSubmissionId() {
   if (crypto.randomUUID) return crypto.randomUUID();
   return `submission-${Date.now()}-${Math.random().toString(16).slice(2)}`;
-}
-
-function clearDrafts() {
-  sessionStorage.removeItem(DRAFT_KEY);
-  localStorage.removeItem(DRAFT_KEY);
-  LEGACY_DRAFT_KEYS.forEach((key) => localStorage.removeItem(key));
 }
 
 function rowHasValue(list = [], selected) {
@@ -274,6 +292,7 @@ function toggleFoodFields() {
     $("#storageSelect").value = "";
     $("#shelfLifeSelect").value = "";
     $$('[name="foodIssue"]').forEach((input) => { input.checked = false; });
+    syncExclusiveNoneGroup("foodIssue");
   }
 }
 
@@ -307,13 +326,7 @@ function renderRankings() {
 }
 
 function reasonText(group) {
-  const reasons = [`${state.subcategory} 상담 가능`];
-  const interest = values("interestType").filter((type) => group.type.some((item) => item.includes(type)));
-  if (interest.length) reasons.push(`${interest.join(", ")} 상담 방향 일치`);
-  if (singleValue("storage")) reasons.push(`${singleValue("storage")} 불가 조건 없음`);
-  const channelMatches = values("interestChannel").filter((channel) => group.channels.some((item) => normalize(item).includes(normalize(channel)) || normalize(channel).includes(normalize(item))));
-  if (channelMatches.length) reasons.push(`${channelMatches.slice(0, 2).join(", ")} 채널 연관`);
-  return reasons;
+  return [`${state.subcategory} 상담 가능`];
 }
 
 function renderMatchedList() {
@@ -408,32 +421,6 @@ function payload() {
   };
 }
 
-function draftPayload() {
-  const value = payload();
-  return {
-    pageVersion: PAGE_VERSION,
-    companyName: value.companyName,
-    businessType: value.businessType,
-    foundedDate: value.foundedDate,
-    employeeCount: value.employeeCount,
-    homepage: value.homepage,
-    category: value.category,
-    subcategory: value.subcategory,
-    storage: value.storage,
-    shelfLife: value.shelfLife,
-    foodIssues: value.foodIssues,
-    productDetail: value.productDetail,
-    interestType: value.interestType,
-    interestChannels: value.interestChannels,
-    currentChannels: value.currentChannels,
-    distributionDetail: value.distributionDetail,
-    distributionIssues: value.distributionIssues,
-    randomMatch: value.randomMatch,
-    rankings: value.rankings,
-    confirmationAgree: value.confirmationAgree,
-  };
-}
-
 function renderPreview() {
   const value = payload();
   const blocks = [
@@ -456,6 +443,30 @@ function setStatus(message, tone = "") {
   const status = $("#statusMessage");
   status.textContent = message;
   status.className = `statusMessage ${tone}`.trim();
+  status.setAttribute("role", tone === "error" ? "alert" : "status");
+}
+
+function setSubmitting(isSubmitting) {
+  const button = $("#submitBtn");
+  if (!button) return;
+  button.disabled = isSubmitting;
+  button.setAttribute("aria-busy", String(isSubmitting));
+  button.textContent = isSubmitting ? "확인 중…" : "신청서 제출";
+}
+
+function focusValidationTarget(message) {
+  const target = message.startsWith("사업형태")
+    ? $('[name="businessType"]')
+    : message.startsWith("관심 분야")
+      ? $('[name="interestType"]')
+      : message.startsWith("상담 희망 유통사")
+        ? $('[name="rank1"]')
+        : message.startsWith("휴대폰")
+          ? $('[name="mobilePhone"]')
+          : message.startsWith("이메일")
+            ? $('[name="email"]')
+            : null;
+  target?.focus();
 }
 
 function isSubmissionEnabled() {
@@ -497,6 +508,9 @@ function validatePayload(value) {
   if (!value.privacyAgree) errors.push("개인정보 수집·이용에 동의해야 신청할 수 있습니다.");
   if (!value.businessType.length) errors.push("사업형태를 1개 이상 선택하세요.");
   if (!value.interestType.length) errors.push("관심 분야를 1개 이상 선택하세요.");
+  if (value.productDetail.trim().length > PRODUCT_DETAIL_MAX_LENGTH) {
+    errors.push(`세부 상담 품목은 ${PRODUCT_DETAIL_MAX_LENGTH}자 이내로 입력하세요.`);
+  }
   if (!value.rankings.length && value.randomMatch !== "예, 희망합니다.") {
     errors.push("상담 희망 유통사를 1곳 이상 선택하거나 임의 매칭을 희망으로 선택하세요.");
   }
@@ -510,55 +524,67 @@ function validatePayload(value) {
   return errors;
 }
 
-function saveDraft() {
-  sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draftPayload()));
-  LEGACY_DRAFT_KEYS.forEach((key) => localStorage.removeItem(key));
-  localStorage.removeItem(DRAFT_KEY);
-  setStatus("개인 연락처를 제외한 신청 내용만 이 브라우저 세션에 임시저장했습니다.", "success");
-}
-
-function setCheckedValues(name, valuesToSet = []) {
-  $$(`[name="${name}"]`).forEach((input) => {
-    input.checked = valuesToSet.includes(input.value);
-  });
-}
-
-function loadDraft() {
-  const raw = sessionStorage.getItem(DRAFT_KEY);
-  if (!raw) {
-    setStatus("불러올 임시저장 내용이 없습니다.", "warning");
-    return;
+function showSuccessModal() {
+  const modal = $("#successModal");
+  if (typeof modal.showModal === "function") {
+    modal.showModal();
+  } else {
+    modal.setAttribute("open", "");
   }
+  $("#confirmSuccessModalBtn")?.focus();
+}
+
+function closeSuccessModal() {
+  const modal = $("#successModal");
+  if (typeof modal.close === "function") {
+    modal.close();
+  } else {
+    modal.removeAttribute("open");
+  }
+}
+
+async function preparePrepChecklistDownload() {
+  const link = $('.successModal__actions a[download]');
+  if (!link) return;
   try {
-    const value = JSON.parse(raw);
-    ["companyName", "foundedDate", "employeeCount", "homepage", "storage", "shelfLife", "productDetail", "distributionDetail"].forEach((name) => {
-      const field = $(`[name="${name}"]`);
-      if (field) field.value = value[name] || "";
+    const response = await fetch(link.href, { cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    link.href = URL.createObjectURL(await response.blob());
+  } catch {}
+}
+
+function initFloatingSummaryStats() {
+  const source = $(".summaryStats");
+  if (!source) return;
+
+  const floating = source.cloneNode(true);
+  floating.classList.add("floatingSummaryStats");
+  floating.setAttribute("aria-hidden", "true");
+  floating.querySelectorAll("[id]").forEach((element) => element.removeAttribute("id"));
+  document.body.append(floating);
+
+  const syncValues = () => {
+    const sourceValues = source.querySelectorAll("strong");
+    const floatingValues = floating.querySelectorAll("strong");
+    sourceValues.forEach((element, index) => {
+      if (floatingValues[index]) floatingValues[index].textContent = element.textContent;
     });
-    state.category = value.category || "";
-    state.subcategory = value.subcategory || "";
-    setCheckedValues("businessType", value.businessType);
-    setCheckedValues("foodIssue", value.foodIssues);
-    setCheckedValues("interestType", value.interestType);
-    setCheckedValues("interestChannel", value.interestChannels);
-    setCheckedValues("currentChannel", value.currentChannels);
-    setCheckedValues("distributionIssue", value.distributionIssues);
-    $$('[name="randomMatch"]').forEach((input) => { input.checked = input.value === value.randomMatch; });
-    $$('[name="confirmationAgree"]').forEach((input) => { input.checked = Boolean(value.confirmationAgree); });
-    renderCategoryCards();
-    renderSubcategories();
-    toggleFoodFields();
-    updateMatches();
-    value.rankings?.forEach((item) => {
-      const field = $(`[name="rank${item.rank}"]`);
-      if (field) field.value = item.company;
-    });
-    renderRankings();
-    renderPreview();
-    setStatus("개인 연락처를 제외한 임시저장 내용을 불러왔습니다.", "success");
-  } catch {
-    setStatus("임시저장 내용을 읽을 수 없습니다.", "error");
-  }
+  };
+
+  syncValues();
+  new MutationObserver(syncValues).observe(source, {
+    childList: true,
+    characterData: true,
+    subtree: true,
+  });
+  new IntersectionObserver(([entry]) => {
+    floating.classList.toggle("isVisible", !entry.isIntersecting);
+  }).observe(source);
+}
+
+function enforceProductDetailLength(event) {
+  if (event.target.value.length <= PRODUCT_DETAIL_MAX_LENGTH) return;
+  event.target.value = event.target.value.slice(0, PRODUCT_DETAIL_MAX_LENGTH);
 }
 
 async function submitForm(event) {
@@ -569,6 +595,7 @@ async function submitForm(event) {
   const validationErrors = validatePayload(value);
   if (validationErrors.length) {
     setStatus(validationErrors[0], "error");
+    focusValidationTarget(validationErrors[0]);
     return;
   }
 
@@ -578,6 +605,7 @@ async function submitForm(event) {
   }
 
   try {
+    setSubmitting(true);
     setStatus("신청서를 제출하는 중입니다.");
     const response = await fetch(submissionEndpoint(), {
       method: "POST",
@@ -585,17 +613,20 @@ async function submitForm(event) {
       body: JSON.stringify(value),
     });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    setStatus("신청서가 제출되었습니다.", "success");
-    clearDrafts();
+    setStatus("");
     $("#applicationForm").reset();
     state.category = "";
     state.subcategory = "";
     renderCategoryCards();
     renderSubcategories();
     toggleFoodFields();
+    NONE_EXCLUSIVE_GROUPS.forEach(syncExclusiveNoneGroup);
     updateMatches();
+    showSuccessModal();
   } catch (error) {
     setStatus(`제출에 실패했습니다. ${error.message}`, "error");
+  } finally {
+    setSubmitting(false);
   }
 }
 
@@ -614,6 +645,7 @@ function bindEvents() {
     updateMatches();
   });
   $("#applicationForm").addEventListener("change", (event) => {
+    handleExclusiveNoneChange(event.target);
     if (event.target.classList.contains("rankSelect")) {
       renderRankings();
       renderPreview();
@@ -623,13 +655,15 @@ function bindEvents() {
   });
   $("#applicationForm").addEventListener("input", renderPreview);
   $("#applicationForm").addEventListener("submit", submitForm);
-  $("#saveDraftBtn").addEventListener("click", saveDraft);
-  $("#loadDraftBtn").addEventListener("click", loadDraft);
+  $('[name="productDetail"]').addEventListener("input", enforceProductDetailLength);
+  $("#closeSuccessModalBtn").addEventListener("click", closeSuccessModal);
+  $("#confirmSuccessModalBtn").addEventListener("click", closeSuccessModal);
+  $("#successModal").addEventListener("click", (event) => {
+    if (event.target === event.currentTarget) closeSuccessModal();
+  });
 }
 
 function init() {
-  LEGACY_DRAFT_KEYS.forEach((key) => localStorage.removeItem(key));
-  localStorage.removeItem(DRAFT_KEY);
   $("#totalDistributorCount").textContent = uniq(data.map((row) => row.company)).length.toLocaleString("ko-KR");
   renderCheckOptions("#interestChannels", "interestChannel", CHANNELS);
   renderCheckOptions("#currentChannels", "currentChannel", CURRENT_CHANNELS);
@@ -638,8 +672,11 @@ function init() {
   renderRankings();
   renderMatchedList();
   renderPreview();
+  NONE_EXCLUSIVE_GROUPS.forEach(syncExclusiveNoneGroup);
   bindEvents();
   applySubmissionState();
+  preparePrepChecklistDownload();
+  initFloatingSummaryStats();
 }
 
 document.addEventListener("DOMContentLoaded", init);
