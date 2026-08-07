@@ -1001,7 +1001,7 @@ textarea.control {
 }
 
 .successModal {
-  width: min(700px, calc(100% - 32px));
+  width: min(560px, calc(100% - 32px));
   max-height: calc(100dvh - 32px);
   margin: auto;
   overflow: auto;
@@ -1063,9 +1063,12 @@ textarea.control {
 
 .prepChecklistImage {
   display: block;
-  width: 100%;
+  width: auto;
+  max-width: 100%;
   height: auto;
-  aspect-ratio: auto;
+  max-height: min(720px, calc(100dvh - 300px));
+  aspect-ratio: 2 / 3;
+  margin-inline: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);
   object-fit: contain;
