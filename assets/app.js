@@ -334,8 +334,8 @@ function renderMatchedList() {
   $("#matchedDistributorCount").textContent = groups.length.toLocaleString("ko-KR");
   $("#matchCountText").textContent = `${groups.length.toLocaleString("ko-KR")}곳`;
   if (!state.category || !state.subcategory) {
-    $("#matchNotice").className = "notice";
-    $("#matchNotice").textContent = "대분류와 소분류를 선택하면 상담 가능한 유통사가 표시됩니다.";
+    $("#matchNotice").className = "notice ok";
+    $("#matchNotice").textContent = "상품 조건에 맞는 유통사를 확인하고 희망 순위를 선택해주세요. 대분류와 소분류를 선택하면 상담 가능한 유통사가 표시됩니다.";
     $("#matchedList").innerHTML = "";
     return;
   }
@@ -346,7 +346,7 @@ function renderMatchedList() {
     return;
   }
   $("#matchNotice").className = "notice ok";
-  $("#matchNotice").textContent = "아래 유통사 안에서만 희망 순위를 선택할 수 있습니다.";
+  $("#matchNotice").textContent = "상품 조건에 맞는 유통사를 확인하고 아래 유통사 안에서 희망 순위를 선택해주세요.";
   $("#matchedList").innerHTML = groups.slice(0, 60).map((group) => `
     <article class="matchCard">
       <div>
@@ -455,17 +455,17 @@ function setSubmitting(isSubmitting) {
 }
 
 function focusValidationTarget(message) {
-  const target = message.startsWith("사업형태")
-    ? $('[name="businessType"]')
-    : message.startsWith("관심 분야")
-      ? $('[name="interestType"]')
-      : message.startsWith("상담 희망 유통사")
-        ? $('[name="rank1"]')
-        : message.startsWith("휴대폰")
-          ? $('[name="mobilePhone"]')
-          : message.startsWith("이메일")
-            ? $('[name="email"]')
-            : null;
+  const targets = [
+    ["사업형태", '[name="businessType"]'],
+    ["관심 분야", '[name="interestType"]'],
+    ["기타 유통", '[name="distributionIssue"]'],
+    ["직원 수", '[name="employeeCount"]'],
+    ["상담 희망 유통사", '[name="rank1"]'],
+    ["휴대폰", '[name="mobilePhone"]'],
+    ["이메일", '[name="email"]'],
+  ];
+  const matchedTarget = targets.find(([prefix]) => message.startsWith(prefix));
+  const target = matchedTarget ? $(matchedTarget[1]) : null;
   target?.focus();
 }
 
@@ -500,14 +500,17 @@ function validatePayload(value) {
   const errors = [];
   const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const mobilePattern = /^01[016789]-?\d{3,4}-?\d{4}$/;
+  const employeeCountPattern = /^\d+$/;
 
   if (!value.companyName.trim()) errors.push("회사명을 입력하세요.");
+  if (!employeeCountPattern.test(value.employeeCount.trim())) errors.push("직원 수는 숫자만 입력하세요.");
   if (!value.managerName.trim()) errors.push("담당자명을 입력하세요.");
   if (!emailPattern.test(value.email.trim())) errors.push("이메일 주소 형식을 확인하세요.");
   if (!mobilePattern.test(value.mobilePhone.trim())) errors.push("휴대폰 번호 형식을 확인하세요.");
   if (!value.privacyAgree) errors.push("개인정보 수집·이용에 동의해야 신청할 수 있습니다.");
   if (!value.businessType.length) errors.push("사업형태를 1개 이상 선택하세요.");
   if (!value.interestType.length) errors.push("관심 분야를 1개 이상 선택하세요.");
+  if (!value.distributionIssues.length) errors.push("기타 유통 관련 특이사항을 1개 이상 선택하세요.");
   if (value.productDetail.trim().length > PRODUCT_DETAIL_MAX_LENGTH) {
     errors.push(`세부 상담 품목은 ${PRODUCT_DETAIL_MAX_LENGTH}자 이내로 입력하세요.`);
   }
@@ -587,6 +590,10 @@ function enforceProductDetailLength(event) {
   event.target.value = event.target.value.slice(0, PRODUCT_DETAIL_MAX_LENGTH);
 }
 
+function enforceDigitsOnly(event) {
+  event.target.value = event.target.value.replace(/\D/g, "");
+}
+
 async function submitForm(event) {
   event.preventDefault();
   if (!$("#applicationForm").reportValidity()) return;
@@ -631,6 +638,7 @@ async function submitForm(event) {
 }
 
 function bindEvents() {
+  $('[name="employeeCount"]').addEventListener("input", enforceDigitsOnly);
   $("#categoryCards").addEventListener("change", (event) => {
     if (event.target.name !== "category") return;
     state.category = event.target.value;
