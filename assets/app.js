@@ -459,6 +459,7 @@ function focusValidationTarget(message) {
     ["사업형태", '[name="businessType"]'],
     ["관심 분야", '[name="interestType"]'],
     ["기타 유통", '[name="distributionIssue"]'],
+    ["회사설립일", '[name="foundedDate"]'],
     ["직원 수", '[name="employeeCount"]'],
     ["상담 희망 유통사", '[name="rank1"]'],
     ["휴대폰", '[name="mobilePhone"]'],
@@ -503,6 +504,7 @@ function validatePayload(value) {
   const employeeCountPattern = /^\d+$/;
 
   if (!value.companyName.trim()) errors.push("회사명을 입력하세요.");
+  if (!isValidFoundedDate(value.foundedDate)) errors.push("회사설립일은 YYYY-MM-DD 형식의 올바른 날짜로 입력하세요.");
   if (!employeeCountPattern.test(value.employeeCount.trim())) errors.push("직원 수는 숫자만 입력하세요.");
   if (!value.managerName.trim()) errors.push("담당자명을 입력하세요.");
   if (!emailPattern.test(value.email.trim())) errors.push("이메일 주소 형식을 확인하세요.");
@@ -594,8 +596,50 @@ function enforceDigitsOnly(event) {
   event.target.value = event.target.value.replace(/\D/g, "");
 }
 
+function formatFoundedDate(value) {
+  const digits = String(value || "").replace(/\D/g, "").slice(0, 8);
+  if (digits.length < 4) return digits;
+  if (digits.length === 4) return `${digits}-`;
+  if (digits.length < 6) return `${digits.slice(0, 4)}-${digits.slice(4)}`;
+  if (digits.length === 6) return `${digits.slice(0, 4)}-${digits.slice(4)}-`;
+  return `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
+}
+
+function isValidFoundedDate(value) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(value || ""));
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  if (year < 1000 || year > 9999) return false;
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.getUTCFullYear() === year
+    && date.getUTCMonth() === month - 1
+    && date.getUTCDate() === day;
+}
+
+function updateFoundedDateValidity() {
+  const input = $('[name="foundedDate"]');
+  const isValid = !input.value || isValidFoundedDate(input.value);
+  input.setCustomValidity(isValid ? "" : "회사설립일을 YYYY-MM-DD 형식의 올바른 날짜로 입력해주세요.");
+}
+
+function enforceFoundedDate(event) {
+  event.target.value = formatFoundedDate(event.target.value);
+  const picker = $("#foundedDatePicker");
+  picker.value = isValidFoundedDate(event.target.value) ? event.target.value : "";
+  updateFoundedDateValidity();
+}
+
+function syncFoundedDateFromPicker(event) {
+  const input = $('[name="foundedDate"]');
+  input.value = event.target.value;
+  input.dispatchEvent(new Event("input", { bubbles: true }));
+}
+
 async function submitForm(event) {
   event.preventDefault();
+  updateFoundedDateValidity();
   if (!$("#applicationForm").reportValidity()) return;
   const value = payload();
 
@@ -638,6 +682,8 @@ async function submitForm(event) {
 }
 
 function bindEvents() {
+  $('[name="foundedDate"]').addEventListener("input", enforceFoundedDate);
+  $("#foundedDatePicker").addEventListener("change", syncFoundedDateFromPicker);
   $('[name="employeeCount"]').addEventListener("input", enforceDigitsOnly);
   $("#categoryCards").addEventListener("change", (event) => {
     if (event.target.name !== "category") return;
