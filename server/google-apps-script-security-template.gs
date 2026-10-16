@@ -1,4 +1,4 @@
-const SPREADSHEET_ID = "17DgdMSgg_8BHj_IUgkantC9_tQa6h3dl0xbatLTrOgQ";
+const SPREADSHEET_ID = "";
 const SHEET_NAME = "신청응답";
 const ALLOWED_ORIGINS = [
   "사용할 주소"
